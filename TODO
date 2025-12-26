@@ -1,8 +1,12 @@
+bugs & glitches
+- 2x2 NW shape is offset by 1 when placed
+
 - All the shapes
   - fill palette with random shapes
   - disable palette when dragged
   - refill palette when emptied
 - drag robustness
+- hide - rather than remove - the placed palette shapes
 - CSS to hide cells in palettes, dragging, etc.
 - palette hover affordances
 - drop affordances

@@ -31,7 +31,7 @@ const game = {
 			let y = cell[1]
 
 			let elem = document.getElementById( `palette_${palette}_${x}_${y}` )
-			elem.setAttribute( 'class', 'cell filled' )
+			elem.setAttribute( 'class', 'cell filled ' + shape.class )
 		}
 	},
 

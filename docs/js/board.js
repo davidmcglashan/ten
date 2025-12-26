@@ -33,7 +33,7 @@ const board = {
 			board.matrix[y][x] = 1
 			
 			let elem = document.getElementById( `board_${x}_${y}` )
-			elem.setAttribute( 'class', 'cell filled' )
+			elem.setAttribute( 'class', 'cell filled ' + shape.class )
 		}
 
 		board.checkForFills()

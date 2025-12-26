@@ -25,9 +25,25 @@ body {
 	aspect-ratio: 1;
 }
 
-.cell.filled {
+.cell.red {
 	background-color: #a34;
 	border: 1px solid #800;
+}
+.cell.orange {
+	background-color: #f84;
+	border: 1px solid #e73;
+}
+.cell.yellow {
+	background-color: #ff0;
+	border: 1px solid #dd0;
+}
+.cell.green {
+	background-color: #283;
+	border: 1px solid #172;
+}
+.cell.blue {
+	background-color: #36c;
+	border: 1px solid #25b;
 }
 
 #palette {
