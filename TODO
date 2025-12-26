@@ -1,0 +1,20 @@
+- All the shapes
+  - fill palette with random shapes
+  - disable palette when dragged
+  - refill palette when emptied
+- drag robustness
+- CSS to hide cells in palettes, dragging, etc.
+- palette hover affordances
+- drop affordances
+- Colour the shapes
+- Animations
+  - dropping
+  - snapping back
+  - removing cols
+  - rows
+  - prevent drags when an animation is playing
+- scores (1 per cell added, 10 for row/col removed)
+- game over detection
+- restart
+- general UI
+- touch gestures
