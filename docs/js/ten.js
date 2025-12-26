@@ -123,7 +123,7 @@ const ten = {
 			for ( let elem of document.elementsFromPoint( event.x, event.y ) ) {
 				let id = elem.getAttribute( 'id' )
 				if ( id && id === 'board' ) {
-					let dropOrigin = drag.querySelector( ".cell.filled" ).getBoundingClientRect()
+					let dropOrigin = drag.querySelector( ".cell" ).getBoundingClientRect()
 					let boardOrigin = elem.getBoundingClientRect()
 					let x = Math.round( ( dropOrigin.left - boardOrigin.left ) / (3+dropOrigin.width) )
 					let y = Math.round( ( dropOrigin.top - boardOrigin.top ) / (3+dropOrigin.width) )
