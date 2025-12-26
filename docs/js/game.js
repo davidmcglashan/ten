@@ -10,12 +10,12 @@ const game = {
 	},
 
 	/**
-	 * Fills the palette with three new shapes
+	 * Fills the palette with three new random shapes
 	 */
 	nextPalette: () => {
-		game.fillPalette( 0, 0 )
-		game.fillPalette( 1, 1 )
-		game.fillPalette( 2, 2 )
+		game.fillPalette( 0, Math.floor( Math.random() * shapes.all.length ) )
+		game.fillPalette( 1, Math.floor( Math.random() * shapes.all.length ) )
+		game.fillPalette( 2, Math.floor( Math.random() * shapes.all.length ) )
 	},
 
 	/**
@@ -32,6 +32,20 @@ const game = {
 
 			let elem = document.getElementById( `palette_${palette}_${x}_${y}` )
 			elem.setAttribute( 'class', 'cell filled' )
+		}
+	},
+
+	/**
+	 * Removes a palette option.
+	 */
+	emptyPalette: ( palette ) => {
+		game.palette[palette] = null
+		let elem = document.getElementById( `palette_${palette}` )
+		elem.innerHTML = ''
+		
+		// If all three palettes are now empty we can invoke the next palette
+		if ( game.palette[0] === null && game.palette[1] === null && game.palette[2] === null ) {
+			game.nextPalette()
 		}
 	}
 };

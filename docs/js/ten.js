@@ -129,7 +129,7 @@ const ten = {
 					let y = Math.round( ( dropOrigin.top - boardOrigin.top ) / (3+dropOrigin.width) )
 					
 					if ( board.placeShapeAt( game.palette[ten.drag.sourcePalette], x, y ) ) {
-						// animate drop
+						 game.emptyPalette( ten.drag.sourcePalette )
 					} else {
 						// animate snapback
 					}

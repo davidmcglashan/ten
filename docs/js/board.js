@@ -37,6 +37,7 @@ const board = {
 		}
 
 		board.checkForFills()
+		return true
 	},
 
 	checkForFills: () => {
