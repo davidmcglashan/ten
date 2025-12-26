@@ -45,6 +45,18 @@ body {
 	background-color: #36c;
 	border: 1px solid #25b;
 }
+.cell.purple {
+	background-color: #c6c;
+	border: 1px solid #b5b;
+}
+.cell.black {
+	background-color: #343;
+	border: 1px solid #232;
+}
+.cell.grey {
+	background-color: #789;
+	border: 1px solid #678;
+}
 
 #palette {
 	display: flex;

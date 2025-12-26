@@ -15,6 +15,8 @@ bugs & glitches
   - prevent drags when an animation is playing
 - scores (1 per cell added, 10 for row/col removed)
 - game over detection
-- restart
 - general UI
+  - restart
+  - light/dark/schemes?
 - touch gestures
+- save progress
