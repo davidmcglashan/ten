@@ -68,10 +68,16 @@ const board = {
 			}
 		}
 
-		// Remove that which is to be removed.
+		// Score 10 for each row removed, with subsequent rows happening at the same time
+		// counting double.
 		let removals = toRemove.rows.length + toRemove.cols.length
-		ten.addToScore( removals*10 )
-
+		let factor = 10
+		for ( let i=0; i<removals; i++ ) {
+			ten.addToScore( factor )
+			factor = 2*factor
+		}
+		
+		// Remove that which is to be removed.
 		for ( let y of toRemove.rows ) {
 			for ( let x=0; x<10; x++ ) {
 				board.matrix[y][x] = 0
