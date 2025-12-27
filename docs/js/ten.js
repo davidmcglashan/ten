@@ -1,5 +1,6 @@
 const ten = {
 	drag: {},
+	score: 0,
 
 	go: () => {
 		// Build the board and the three palettes as matrices.
@@ -141,5 +142,18 @@ const ten = {
 				drag.remove()
 			}
 		}
+	},
+
+	addToScore: ( inc ) => {
+		ten.score += inc
+		let elem = document.getElementById( 'score'  )
+		elem.innerHTML = ten.score
+	},
+
+	setScore: ( inc ) => {
+		ten.score = inc
+		let elem = document.getElementById( 'score'  )
+		elem.innerHTML = ten.score
 	}
+
 };

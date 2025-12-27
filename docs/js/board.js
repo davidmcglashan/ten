@@ -34,6 +34,7 @@ const board = {
 			
 			let elem = document.getElementById( `board_${x}_${y}` )
 			elem.setAttribute( 'class', 'cell filled ' + shape.class )
+			ten.addToScore( 1 )
 		}
 
 		board.checkForFills()
@@ -68,6 +69,9 @@ const board = {
 		}
 
 		// Remove that which is to be removed.
+		let removals = toRemove.rows.length + toRemove.cols.length
+		ten.addToScore( removals*10 )
+
 		for ( let y of toRemove.rows ) {
 			for ( let x=0; x<10; x++ ) {
 				board.matrix[y][x] = 0
