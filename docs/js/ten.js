@@ -141,6 +141,7 @@ const ten = {
 			if ( drag ) {
 				drag.remove()
 			}
+			ten.save()
 		}
 	},
 
@@ -154,6 +155,38 @@ const ten = {
 		ten.score = inc
 		let elem = document.getElementById( 'score'  )
 		elem.innerHTML = ten.score
-	}
+	},
 
+	/**
+	 * Save the game state into localstorage
+	 */
+	save: () => {
+		// Remember the score
+		let state = {}
+		state.score = ten.score
+		
+		// Remember the cells
+		state.cells = []
+		for ( let y=0; y<10; y++ ) {
+			for ( let x=0; x<10; x++ ) {
+				if ( board.matrix[y][x] !== 0 ) {
+					let cell = {}
+					cell.x = x
+					cell.y = y
+
+					let elem = document.getElementById( `board_${x}_${y}` )
+					cell.css = elem.getAttribute( 'class' ).replace( 'cell', '' ).replace( 'filled', '' ).trim()
+					state.cells.push(cell)
+				}
+			}
+		}
+
+		// Remember the palettes
+		state.palette0 = game.palette[0] ? game.palette[0].shape : null
+		state.palette1 = game.palette[1] ? game.palette[1].shape : null
+		state.palette2 = game.palette[2] ? game.palette[2].shape : null
+
+		// Stick it all in storage ...
+		localStorage['ten.state'] = JSON.stringify( state )
+	}
 };

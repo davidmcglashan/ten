@@ -24,6 +24,7 @@ const game = {
 	fillPalette: ( palette, s ) => {
 		let shape = shapes.all[s]
 		game.palette[palette] = shape
+		game.palette[palette].shape = s
 
 		ten.matrix( `palette_${palette}`, shape.width, shape.height )
 		for ( let cell of shape.cells ) {

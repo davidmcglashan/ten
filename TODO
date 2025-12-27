@@ -1,6 +1,10 @@
 bugs & glitches
 
-- The rest of the shapes
+- restore an in progress game
+- The rest of the shapes (3x3)
+- game over detection
+  - iterate palette and iterate each fitting x/y
+- touch gestures
 - drag robustness
 - hide - rather than remove - the placed palette shapes
 - palette hover affordances
@@ -13,10 +17,6 @@ bugs & glitches
   - removing cols
   - rows
   - prevent drags when an animation is playing
-- scores (1 per cell added, 10 for row/col removed)
-- game over detection
 - general UI
   - restart
   - light/dark/schemes?
-- touch gestures
-- save progress
