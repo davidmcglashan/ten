@@ -5,6 +5,7 @@ const game = {
 	 * Starts a new game.
 	 */
 	new: () => {
+		ten.setScore( 0 )
 		board.empty()
 		game.nextPalette()
 	},

@@ -76,11 +76,13 @@ body {
 
 #glass {
 	position: absolute;
-	inset: 1rem;
-/*	border: 2px solid #00c;
+	inset: 2rem;
+	/*	
+	border: 2px solid #00c;
 	background-color: #46f;
 	border-radius: 4px;
-	opacity: 0.25;*/
+	opacity: 0.25;
+	*/
 }
 
 #glass.hover {

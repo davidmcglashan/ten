@@ -13,8 +13,15 @@ const ten = {
 		glass.addEventListener( 'mousedown', ten.mousePressed )
 //		glass.addEventListener( 'mouseleave', table.mouseOut )
 
-		// Make the game a-go!
+		// Make the game a-go ... If there's one in storage, use that!
+		if ( !ten.restore() ) {
+			game.new()
+		}
+	},
+
+	restart: () => {
 		game.new()
+		return false
 	},
 
 	/**
@@ -188,5 +195,47 @@ const ten = {
 
 		// Stick it all in storage ...
 		localStorage['ten.state'] = JSON.stringify( state )
+	},
+
+	/**
+	 * Restore the game from localstorage. If this should fail then a new game is set up.
+	 */
+	restore: () => {
+		// First inspect the 
+		let savedStr = localStorage['ten.state']
+		if ( !savedStr ) {
+			return false
+		}
+		let saved = JSON.parse( savedStr )
+
+		// Restore the score
+		ten.setScore( saved.score )
+
+		// Restore the palettes
+		if ( saved.palette0 ) {	
+			game.fillPalette( 0, saved.palette0 ) 
+		} else {
+			game.palette[0] = null
+		}
+		if ( saved.palette1 ) {	
+			game.fillPalette( 1, saved.palette1 ) 
+		} else {
+			game.palette[1] = null
+		}
+		if ( saved.palette2 ) {	
+			game.fillPalette( 2, saved.palette2 ) 
+		} else {
+			game.palette[2] = null
+		}
+
+		// Restore the board
+		board.empty()
+		for ( let cell of saved.cells ) {
+			board.matrix[cell.y][cell.x] = 1
+			let elem = document.getElementById( `board_${cell.x}_${cell.y}` )
+			elem.setAttribute( 'class', 'cell filled ' + cell.css )
+		}
+
+		return true
 	}
 };

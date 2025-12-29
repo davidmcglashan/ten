@@ -9,6 +9,9 @@ const board = {
 			board.matrix[y] = []
 			for ( let x=0; x<10; x++ ) {
 				board.matrix[y][x] = 0
+
+				let elem = document.getElementById( `board_${x}_${y}` )
+				elem.setAttribute( 'class', 'cell' )
 			}
 		}
 	},
