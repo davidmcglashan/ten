@@ -76,8 +76,9 @@ body {
 
 #glass {
 	position: absolute;
-	inset: 2rem;
-	/*	
+	inset: 0;
+	top: 2rem;
+	/*
 	border: 2px solid #00c;
 	background-color: #46f;
 	border-radius: 4px;
