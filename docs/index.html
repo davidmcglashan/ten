@@ -10,13 +10,13 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	</head>
 	<body>
-		<div><a href="javascript:void(0);" onclick="ten.restart()">Restart</a></div>
+		<div id="buttons"><a href="javascript:void(0);" onclick="ten.restart()">Restart</a></div>
 		<div id="score">0</div>
 		<div id="board"></div>
 		<div id="palette">
-			<div id="palette_0" class="palette"></div>
-			<div id="palette_1" class="palette"></div>
-			<div id="palette_2" class="palette"></div>
+			<div id="palette_0" class="palette" data-drag="true"></div>
+			<div id="palette_1" class="palette" data-drag="true"></div>
+			<div id="palette_2" class="palette" data-drag="true"></div>
 		</div>
 		<div id="glass"></div>
 		<script>ten.go()</script>

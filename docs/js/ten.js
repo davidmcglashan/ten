@@ -11,7 +11,10 @@ const ten = {
 		glass.addEventListener( 'mouseup', ten.mouseReleased )
 		glass.addEventListener( 'mousemove', ten.trackMouse )
 		glass.addEventListener( 'mousedown', ten.mousePressed )
-//		glass.addEventListener( 'mouseleave', table.mouseOut )
+
+		glass.addEventListener( 'touchstart', ten.touchStarted )
+		glass.addEventListener( 'touchmove', ten.touchMoved )
+		glass.addEventListener( 'touchend', ten.touchEnded )
 
 		// Make the game a-go ... If there's one in storage, use that!
 		if ( !ten.restore() ) {
@@ -57,17 +60,31 @@ const ten = {
 
 		// Forget everything. The code following it will reinstate the state.
 		glass.setAttribute( 'class', '' )
-		ten.drag.canDrag = null
+		ten.drag.paletteId = null
 
 		// Is there a palette under the mouse.
 		for ( let elem of document.elementsFromPoint( event.x, event.y ) ) {
-			let id = elem.getAttribute( 'id' )
-			if ( id && id.startsWith( 'palette_' ) ) {
+			let drag = elem.getAttribute( 'data-drag' )
+			if ( drag ) {
 				let glass = document.getElementById( 'glass' )
 				glass.setAttribute( 'class', 'hover' )
-				ten.drag.canDrag = id
+				ten.drag.paletteId = elem.getAttribute( 'id' )
 			}
 		}
+	},
+
+	touchMoved: ( event ) => {
+		// Just use the last change as our basis here. We can overlook multiple events and just
+		// use the most recent one.
+		let index = event.changedTouches.length-1
+		let interact = {
+			x: event.changedTouches[index].pageX - ten.drag.offsetX,
+			y: event.changedTouches[index].pageY - ten.drag.offsetY
+		}
+
+		let elem = document.getElementById( 'dragShape'  )
+		elem.style.left = (interact.x) + 'px'
+		elem.style.top = (interact.y) + 'px'
 	},
 
 	/**
@@ -85,40 +102,101 @@ const ten = {
 		elem.style.top = (event.y - ten.drag.offsetY) + 'px'
 	},
 
+	touchStarted: ( event ) => {
+		let interact = {
+			x: event.changedTouches[0].pageX,
+			y: event.changedTouches[0].pageY
+		}
+
+		// Is there a palette under the mouse. Touch has no prior knowledge of the palette ID
+		// from :hover interactions, and so we must work it out here.
+		for ( let elem of document.elementsFromPoint( interact.x, interact.y ) ) {
+			let drag = elem.getAttribute( 'data-drag' )
+			if ( drag ) {
+				ten.drag.paletteId = elem.getAttribute( 'id' )
+				interact.offsetX = interact.x - elem.getBoundingClientRect().x
+				interact.offsetY = interact.y - elem.getBoundingClientRect().y
+				ten.interactOn( interact )
+				return
+			}
+		}
+	},
+
 	/**
 	 * Handle a mouse press on the glass. This is used to start drags from the palette ...
 	 */
 	mousePressed: ( event ) => {
-		// Don't do anything if a drag can't be actioned.
-		if ( ten.drag.canDrag === null ) {
-			return
+		let interact = {
+			x: event.x,
+			y: event.y
 		}
 
-		let palette = document.getElementById( ten.drag.canDrag )
+		// Calculate the offset based on the palette position and the mouse position.
+		let xdiff = interact.x - event.offsetX
+		let ydiff = interact.y - event.offsetY
+
+		// Calculate the pointer/palette offset. Mouse interactivity already knows the
+		// palette from the trackMouse() method
+		let palette = document.getElementById( ten.drag.paletteId )
+		interact.offsetX = interact.x - palette.getBoundingClientRect().x + xdiff
+		interact.offsetY = interact.y - palette.getBoundingClientRect().y + ydiff
+		
+		ten.interactOn( interact )
+	},
+
+	/**
+	 * Complete the setup of a drag. This code works for both touch and pointer and just
+	 * does common DOM and data model stuff.
+	 */
+	interactOn: ( interact ) => {
+		// Don't do anything if a drag wasn't actioned by a palette.
+		if ( ten.drag.paletteId === null ) {
+			return
+		}
+		
+		// Grab a copy of the palette first. Then mark the palette as being dragged.
+		let palette = document.getElementById( ten.drag.paletteId )
 		let copy = palette.cloneNode(true)
 		palette.classList.toggle( 'dragging' )
-		ten.drag.sourceElement = palette
-		ten.drag.sourcePalette = ten.drag.canDrag.slice(-1)
-
-		// Calculate the offset based on the palette position and the mouse position.
-		let xdiff = event.x - event.offsetX
-		let ydiff = event.y - event.offsetY
-		ten.drag.offsetX = event.x - palette.getBoundingClientRect().x + xdiff
-		ten.drag.offsetY = event.y - palette.getBoundingClientRect().y + ydiff
 		
-		// Put a copy of the palette on the glass.
+		// Tidy up the drag data model
+		ten.drag.offsetX = interact.offsetX
+		ten.drag.offsetY = interact.offsetY
+		ten.drag.sourceElement = palette
+		ten.drag.sourcePalette = ten.drag.paletteId.slice(-1)
+		
+		// Put that copy of the palette on the glass.
 		copy.setAttribute( 'id', 'dragShape' )
-		copy.style.left = (event.clientX - ten.drag.offsetX) + 'px'
-		copy.style.top = (event.clientY - ten.drag.offsetY) + 'px'
+		copy.style.left = (interact.x - interact.offsetX) + 'px'
+		copy.style.top = (interact.y - interact.offsetY) + 'px'
 
 		let glass = document.getElementById( 'glass' )
 		glass.appendChild( copy )
+	},
+
+	touchEnded: ( event ) => {
+		// Just use the last change as our basis here. We can overlook multiple events and just
+		// use the most recent one.
+		let index = event.changedTouches.length-1
+		let interact = {
+			x: event.changedTouches[index].pageX - ten.drag.offsetX,
+			y: event.changedTouches[index].pageY - ten.drag.offsetY
+		}
+		ten.interactOff( interact )
 	},
 
 	/**
 	 * Handle a mouse release event. Used to drop shapes either onto the board or back into the palette
 	 */
 	mouseReleased: ( event ) => {
+		let interact = {
+			x: event.x,
+			y: event.y
+		}
+		ten.interactOff( interact )
+	},
+
+	interactOff: ( interact ) => {
 		// Undo the drag so the original item appears again.
 		if ( ten.drag.sourceElement ) {
 			ten.drag.sourceElement.classList.toggle( 'dragging' )
@@ -128,7 +206,7 @@ const ten = {
 		// Did the drop take place over the board?
 		let drag = document.getElementById( 'dragShape'  )
 		try {
-			for ( let elem of document.elementsFromPoint( event.x, event.y ) ) {
+			for ( let elem of document.elementsFromPoint( interact.x, interact.y ) ) {
 				let id = elem.getAttribute( 'id' )
 				if ( id && id === 'board' ) {
 					let dropOrigin = drag.querySelector( ".cell" ).getBoundingClientRect()
