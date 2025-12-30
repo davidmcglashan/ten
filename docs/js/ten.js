@@ -12,9 +12,9 @@ const ten = {
 		glass.addEventListener( 'mousemove', ten.trackMouse )
 		glass.addEventListener( 'mousedown', ten.mousePressed )
 
-		glass.addEventListener( 'touchstart', ten.touchStarted )
-		glass.addEventListener( 'touchmove', ten.touchMoved )
-		glass.addEventListener( 'touchend', ten.touchEnded )
+		glass.addEventListener( 'touchstart', ten.touchStarted, { passive: false } )
+		glass.addEventListener( 'touchmove', ten.touchMoved, { passive: false } )
+		glass.addEventListener( 'touchend', ten.touchEnded, { passive: false } )
 
 		// Make the game a-go ... If there's one in storage, use that!
 		if ( !ten.restore() ) {
