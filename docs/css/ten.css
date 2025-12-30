@@ -9,7 +9,11 @@ body {
 	flex-direction: column;
 	gap: 1rem;
 	align-items: center;
-	overflow: hidden;
+
+	height: 100%;
+    width: 100%;
+    overflow: hidden;
+    position: fixed;
 }
 
 #buttons { 

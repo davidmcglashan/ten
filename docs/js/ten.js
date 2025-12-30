@@ -126,12 +126,16 @@ const ten = {
 	 * Handle a mouse press on the glass. This is used to start drags from the palette ...
 	 */
 	mousePressed: ( event ) => {
+		// Don't do anything if the drag wasn't actioned by a palette.
+		if ( ten.drag.paletteId === null ) {
+			return
+		}
+		
+		// Calculate the offset based on the palette position and the mouse position.
 		let interact = {
 			x: event.x,
 			y: event.y
 		}
-
-		// Calculate the offset based on the palette position and the mouse position.
 		let xdiff = interact.x - event.offsetX
 		let ydiff = interact.y - event.offsetY
 
@@ -148,12 +152,7 @@ const ten = {
 	 * Complete the setup of a drag. This code works for both touch and pointer and just
 	 * does common DOM and data model stuff.
 	 */
-	interactOn: ( interact ) => {
-		// Don't do anything if a drag wasn't actioned by a palette.
-		if ( ten.drag.paletteId === null ) {
-			return
-		}
-		
+	interactOn: ( interact ) => {		
 		// Grab a copy of the palette first. Then mark the palette as being dragged.
 		let palette = document.getElementById( ten.drag.paletteId )
 		let copy = palette.cloneNode(true)
@@ -175,6 +174,11 @@ const ten = {
 	},
 
 	touchEnded: ( event ) => {
+		// Don't do anything if the drag wasn't actioned by a palette.
+		if ( !ten.drag.paletteId ) {
+			return
+		}
+
 		// Just use the last change as our basis here. We can overlook multiple events and just
 		// use the most recent one.
 		let index = event.changedTouches.length-1
@@ -189,6 +193,11 @@ const ten = {
 	 * Handle a mouse release event. Used to drop shapes either onto the board or back into the palette
 	 */
 	mouseReleased: ( event ) => {
+		// Don't do anything if the drag wasn't actioned by a palette.
+		if ( !ten.drag.paletteId ) {
+			return
+		}
+
 		let interact = {
 			x: event.x,
 			y: event.y
