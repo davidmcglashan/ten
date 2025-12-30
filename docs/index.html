@@ -8,15 +8,22 @@
 		<script type="text/javascript" src="js/board.js"></script>
 		<link rel="stylesheet" href="css/ten.css">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Momo+Trust+Display&display=swap" rel="stylesheet">
 	</head>
 	<body>
-		<div id="buttons"><a href="javascript:void(0);" onclick="ten.restart()">Restart</a></div>
-		<div id="score">0</div>
+		<header>
+			<div id="buttons"><a href="javascript:void(0);" onclick="ten.restart()">Restart</a></div>
+			<div id="score">0</div>
+		</header>
 		<div id="board"></div>
-		<div id="palette">
-			<div id="palette_0" class="palette" data-drag="true"></div>
-			<div id="palette_1" class="palette" data-drag="true"></div>
-			<div id="palette_2" class="palette" data-drag="true"></div>
+		<div class="palette-container">
+			<div id="palette">
+				<div id="palette_0" class="palette" data-drag="true"></div>
+				<div id="palette_1" class="palette" data-drag="true"></div>
+				<div id="palette_2" class="palette" data-drag="true"></div>
+			</div>
 		</div>
 		<div id="glass"></div>
 		<script>ten.go()</script>

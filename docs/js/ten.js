@@ -24,6 +24,7 @@ const ten = {
 
 	restart: () => {
 		game.new()
+		ten.save()
 		return false
 	},
 

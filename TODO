@@ -1,10 +1,8 @@
 bugs & glitches
-- cannot drop onto top row
 
 - The rest of the shapes (3x3)
 - game over detection
   - iterate palette and iterate each fitting x/y
-- touch gestures
 - dragging
   - JS robustness
   - edges
@@ -13,7 +11,6 @@ bugs & glitches
 - palette
   - hide - rather than remove - the placed palette shapes
   - palette hover affordances
-  - 75% size that snaps to 100% when on the glass
 - drop affordances
 - Colour the shapes better
 - refactor the javascript into a decent shape
