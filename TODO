@@ -1,10 +1,6 @@
 bugs & glitches
 
-- Move display down a little: restart : rule : score : board : palette
-- commas in the score e.g. 9,999
 - The rest of the shapes (3x3)
-- game over detection
-  - iterate palette and iterate each fitting x/y
 - drop affordances
 - dragging
   - offset should be -ve Y so the shape can be seen over a finger
@@ -12,7 +8,6 @@ bugs & glitches
   - edges
   - right-clicks
 - palette
-  - hide - rather than remove - the placed palette shapes
   - palette hover affordances
 - Colour the shapes better
 - refactor the javascript into a decent shape
@@ -22,6 +17,5 @@ bugs & glitches
   - removing cols
   - removing rows
   - prevent drags when an animation is playing
-- general UI
-  - light/dark/schemes?
-  
+- game over detection
+  - iterate palette and iterate each fitting x/y

@@ -4,6 +4,7 @@ body {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
+	text-transform: lowercase;
 }
 
 main {
@@ -56,7 +57,7 @@ header {
 	background-color: #f8f8f8;
 	border: 1px solid #e0e0e0;
 	border-radius: 3px;
-	width: clamp( 1px, 8cqw, 3rem );
+	width: clamp( 1rem, 8cqw, 2rem );
 	aspect-ratio: 1;
 }
 
@@ -104,7 +105,8 @@ header {
 	display: flex;
 	flex-direction: row;
 	align-items: flex-start;
-	gap: 3rem;
+	justify-content: space-between;
+	width: 120%;
 	scale: 0.66;
 }	
 

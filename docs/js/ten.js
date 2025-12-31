@@ -1,6 +1,7 @@
 const ten = {
 	drag: {},
 	score: 0,
+	hiscore: localStorage['ten.hiscore'] | 0,
 
 	go: () => {
 		// Build the board and the three palettes as matrices.
@@ -242,14 +243,29 @@ const ten = {
 
 	addToScore: ( inc ) => {
 		ten.score += inc
-		let elem = document.getElementById( 'score'  )
-		elem.innerHTML = ten.score
+		ten.updateScore()
 	},
 
 	setScore: ( inc ) => {
 		ten.score = inc
+		ten.updateScore()
+	},
+
+	/**
+	 * Called when the score is changed. Tracks hi-scores. Does DOM stuff.
+	 */
+	updateScore: () => {
 		let elem = document.getElementById( 'score'  )
-		elem.innerHTML = ten.score
+		elem.innerHTML = ten.score.toLocaleString()
+
+		elem = document.getElementById( 'hi-score'  )
+		if ( ten.score > ten.hiscore ) {
+			ten.hiscore = ten.score
+			localStorage['ten.hiscore'] = ten.hiscore
+			elem.innerHTML = 'new hi-score'
+		} else {
+			elem.innerHTML = `hi-score: ${ten.hiscore.toLocaleString()}`
+		}
 	},
 
 	/**
