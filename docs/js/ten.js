@@ -62,7 +62,11 @@ const ten = {
 
 		// Forget everything. The code following it will reinstate the state.
 		glass.setAttribute( 'class', '' )
-		ten.drag.paletteId = null
+		if ( ten.drag.paletteId ) {
+			let elem = document.getElementById( ten.drag.paletteId )
+			elem.classList.remove( 'hover' )
+			ten.drag.paletteId = null
+		}
 
 		// Is there a palette under the mouse.
 		for ( let elem of document.elementsFromPoint( event.x, event.y ) ) {
@@ -71,6 +75,7 @@ const ten = {
 				let glass = document.getElementById( 'glass' )
 				glass.setAttribute( 'class', 'hover' )
 				ten.drag.paletteId = elem.getAttribute( 'id' )
+				elem.classList.add( 'hover' )
 			}
 		}
 	},
@@ -167,6 +172,7 @@ const ten = {
 		ten.drag.sourcePalette = ten.drag.paletteId.slice(-1)
 		
 		// Put that copy of the palette on the glass.
+		copy.classList.add( 'hover' )
 		copy.setAttribute( 'id', 'dragShape' )
 		copy.style.left = (interact.x - interact.offsetX) + 'px'
 		copy.style.top = (interact.y - interact.offsetY) + 'px'

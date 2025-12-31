@@ -1,15 +1,14 @@
 bugs & glitches
+- 1x1s disappear from palette when the page is refreshed
 
 - The rest of the shapes (3x3)
-- drop affordances
+  - Colour the shapes better
+- drop affordances - outline the cells 
 - dragging
   - offset should be -ve Y so the shape can be seen over a finger
   - JS robustness
   - edges
   - right-clicks
-- palette
-  - palette hover affordances
-- Colour the shapes better
 - refactor the javascript into a decent shape
 - Animations
   - dropping
