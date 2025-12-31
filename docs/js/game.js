@@ -27,6 +27,11 @@ const game = {
 		game.palette[palette] = shape
 		game.palette[palette].shape = s
 
+		let elem = document.getElementById( `palette_${palette}` )
+		elem.setAttribute( 'data-drag', 'true' )
+		elem.classList.remove( 'removed' )
+
+
 		ten.matrix( `palette_${palette}`, shape.width, shape.height )
 		for ( let cell of shape.cells ) {
 			let x = cell[0]
@@ -43,7 +48,8 @@ const game = {
 	emptyPalette: ( palette ) => {
 		game.palette[palette] = null
 		let elem = document.getElementById( `palette_${palette}` )
-		elem.innerHTML = ''
+		elem.removeAttribute( 'data-drag' )
+		elem.classList.add( 'removed' )
 		
 		// If all three palettes are now empty we can invoke the next palette
 		if ( game.palette[0] === null && game.palette[1] === null && game.palette[2] === null ) {

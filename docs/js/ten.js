@@ -157,7 +157,7 @@ const ten = {
 		// Grab a copy of the palette first. Then mark the palette as being dragged.
 		let palette = document.getElementById( ten.drag.paletteId )
 		let copy = palette.cloneNode(true)
-		palette.classList.toggle( 'dragging' )
+		palette.classList.toggle( 'removed' )
 		
 		// Tidy up the drag data model
 		ten.drag.offsetX = interact.offsetX
@@ -209,7 +209,7 @@ const ten = {
 	interactOff: ( interact ) => {
 		// Undo the drag so the original item appears again.
 		if ( ten.drag.sourceElement ) {
-			ten.drag.sourceElement.classList.toggle( 'dragging' )
+			ten.drag.sourceElement.classList.toggle( 'removed' )
 			ten.drag.sourceElement = null
 		}
 		

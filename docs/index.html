@@ -13,18 +13,21 @@
 		<link href="https://fonts.googleapis.com/css2?family=Momo+Trust+Display&display=swap" rel="stylesheet">
 	</head>
 	<body>
-		<header>
-			<div id="buttons"><a href="javascript:void(0);" onclick="ten.restart()">Restart</a></div>
+		<main>
+			<header>
+				<div id="buttons"><a href="javascript:void(0);" onclick="ten.restart()">Restart</a></div>
+				<div id="hi-score">score</div>
+			</header>
 			<div id="score">0</div>
-		</header>
-		<div id="board"></div>
-		<div class="palette-container">
-			<div id="palette">
-				<div id="palette_0" class="palette" data-drag="true"></div>
-				<div id="palette_1" class="palette" data-drag="true"></div>
-				<div id="palette_2" class="palette" data-drag="true"></div>
+			<div id="board"></div>
+			<div class="palette-container">
+				<div id="palette">
+					<div id="palette_0" class="palette" data-drag="true"></div>
+					<div id="palette_1" class="palette" data-drag="true"></div>
+					<div id="palette_2" class="palette" data-drag="true"></div>
+				</div>
 			</div>
-		</div>
+		</main>
 		<div id="glass"></div>
 		<script>ten.go()</script>
 	</body>
