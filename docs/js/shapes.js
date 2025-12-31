@@ -90,6 +90,13 @@ const shapes = {
 			class: 'grey'
 		},
 
+		{ // The 3x3 square
+			width: 3,
+			height: 3,
+			cells: [[0,0],[1,0],[2,0],[0,1],[1,1],[2,1],[0,2],[1,2],[2,2]],
+			class: 'pink'
+		},
+
 		{ // Vertical thin 1x4
 			width: 1,
 			height: 4,

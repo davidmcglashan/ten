@@ -93,6 +93,10 @@ header {
 	background-color: #789;
 	border: 1px solid #678;
 }
+.cell.pink {
+	background-color: #faa;
+	border: 1px solid #e99;
+}
 
 .palette-container {
 	padding: 1rem 0;
