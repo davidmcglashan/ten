@@ -122,7 +122,7 @@ const ten = {
 			if ( drag ) {
 				ten.drag.paletteId = elem.getAttribute( 'id' )
 				interact.offsetX = interact.x - elem.getBoundingClientRect().x
-				interact.offsetY = interact.y - elem.getBoundingClientRect().y + 128
+				interact.offsetY = interact.y - elem.getBoundingClientRect().y + 64
 				ten.interactOn( interact )
 				return
 			}
