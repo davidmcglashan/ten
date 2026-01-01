@@ -71,9 +71,14 @@ const board = {
 			}
 		}
 
+		// Quit early if nothing got removed.
+		let removals = toRemove.rows.length + toRemove.cols.length
+		if ( removals === 0 ) {
+			return
+		}
+		
 		// Score 10 for each row removed, with subsequent rows happening at the same time
 		// counting double.
-		let removals = toRemove.rows.length + toRemove.cols.length
 		let factor = 10
 		for ( let i=0; i<removals; i++ ) {
 			ten.addToScore( factor )
@@ -81,19 +86,35 @@ const board = {
 		}
 		
 		// Remove that which is to be removed.
-		for ( let y of toRemove.rows ) {
-			for ( let x=0; x<10; x++ ) {
-				board.matrix[y][x] = 0
-				let elem = document.getElementById( `board_${x}_${y}` )
-				elem.setAttribute( 'class', 'cell' )
+		let elems = {}
+		for ( let i=0; i<10; i++ ) {
+			for ( let y of toRemove.rows ) {
+				board.matrix[y][i] = 0
+				if ( !elems[`${y}_${i}`] ) {
+					elems[`${y}_${i}`] = document.getElementById( `board_${i}_${y}` )
+				}
+			}
+			for ( let x of toRemove.cols ) {
+				board.matrix[i][x] = 0
+				if ( !elems[`${i}_${x}`] ) {
+					elems[`${i}_${x}`] = document.getElementById( `board_${x}_${i}` )
+				}
 			}
 		}
-		for ( let x of toRemove.cols ) {
-			for ( let y=0; y<10; y++ ) {
-				board.matrix[y][x] = 0
-				let elem = document.getElementById( `board_${x}_${y}` )
+
+		// Play a little animation rather than simply disappearing the cell.
+		let delay = 0
+		let offset = 20/removals
+		for ( let [key,elem] of Object.entries(elems) ) {
+			let anim = elem.animate([{transform: 'scale(0)'}],{duration:150, delay: delay, easing: 'ease-in-out'});
+			delay += offset
+			anim.pause()
+
+			// All the tidy up takes place when the animation finishes.
+			anim.onfinish = () => {
 				elem.setAttribute( 'class', 'cell' )
 			}
+			anim.play()
 		}
 	}
 };

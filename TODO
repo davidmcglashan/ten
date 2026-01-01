@@ -1,6 +1,9 @@
 bugs & glitches
 - 1x1s disappear from palette when the page is refreshed
+- it's still a bit tricky to grab the narrow and small pieces
+- three wide pieces really shrinks the palette container
 
+- version number and usual copy bumphf
 - drop affordances - outline the cells 
 - dragging
   - JS robustness
@@ -10,9 +13,6 @@ bugs & glitches
 - Animations
   - dropping
   - snapping back
-  - removing cols
-  - removing rows
-  - prevent drags when an animation is playing
 - game over detection
   - iterate palette and iterate each fitting x/y
 - web app meta and icons
