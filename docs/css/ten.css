@@ -1,6 +1,9 @@
 /* Globally disable text selection. This is a game with lots of long presses and
    drags and we don't want this in the way. */
-* {
+div,a,header,body,main {
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
 	user-select: none;
 }
 
