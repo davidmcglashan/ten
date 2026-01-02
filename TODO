@@ -1,14 +1,7 @@
 bugs & glitches
 
-- move the palettes down so they don't fully overlap the board
-- make the palettes tall so the drag area is large
-- drop affordances - outline the cells 
 - dragging
   - JS robustness
   - right-clicks
 - refactor the javascript into a decent shape
-- Animations
-  - dropping
-- game over detection
-  - iterate palette and iterate each fitting x/y
 - web app meta and icons

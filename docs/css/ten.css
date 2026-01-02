@@ -119,7 +119,7 @@ header {
 
 /* Centre-align the shape palette below the board. */
 #palette-container {
-	margin-top: 1rem;
+	margin-top: 2rem;
 	width: 100%;
 	display: flex;
 	justify-content: center;
