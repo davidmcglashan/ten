@@ -110,6 +110,9 @@ const ten = {
 	},
 
 	touchStarted: ( event ) => {
+		// Stop iOS displaying the zoom loupe when this becomes a long press.
+		event.preventDefault()
+
 		let interact = {
 			x: event.changedTouches[0].pageX,
 			y: event.changedTouches[0].pageY
