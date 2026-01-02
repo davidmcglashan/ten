@@ -122,7 +122,7 @@ const ten = {
 			if ( drag ) {
 				ten.drag.swatchId = elem.getAttribute( 'id' )
 				interact.offsetX = interact.x - elem.getBoundingClientRect().x
-				interact.offsetY = interact.y - elem.getBoundingClientRect().y + 64
+				interact.offsetY = interact.y - elem.getBoundingClientRect().y + elem.getBoundingClientRect().height + 32
 				ten.interactOn( interact )
 				return
 			}
@@ -329,17 +329,17 @@ const ten = {
 		ten.setScore( saved.score )
 
 		// Restore the swatches
-		if ( saved.hasOwnProperty('swatch0' ) ) {	
+		if ( saved.hasOwnProperty('swatch0' ) && saved.swatch0 !== null ) {	
 			game.fillSwatch( 0, saved.swatch0 ) 
 		} else {
 			game.swatches[0] = null
 		}
-		if ( saved.hasOwnProperty('swatch1' ) ) {	
+		if ( saved.hasOwnProperty('swatch1' ) && saved.swatch1 !== null  ) {	
 			game.fillSwatch( 1, saved.swatch1 ) 
 		} else {
 			game.swatches[1] = null
 		}
-		if ( saved.hasOwnProperty('swatch2' ) ) {	
+		if ( saved.hasOwnProperty('swatch2' ) && saved.swatch2 !== null  ) {	
 			game.fillSwatch( 2, saved.swatch2 ) 
 		} else {
 			game.swatches[2] = null
