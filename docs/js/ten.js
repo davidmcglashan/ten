@@ -329,17 +329,17 @@ const ten = {
 		ten.setScore( saved.score )
 
 		// Restore the swatches
-		if ( saved.swatch0 ) {	
+		if ( saved.hasOwnProperty('swatch0' ) ) {	
 			game.fillSwatch( 0, saved.swatch0 ) 
 		} else {
 			game.swatches[0] = null
 		}
-		if ( saved.swatch1 ) {	
+		if ( saved.hasOwnProperty('swatch1' ) ) {	
 			game.fillSwatch( 1, saved.swatch1 ) 
 		} else {
 			game.swatches[1] = null
 		}
-		if ( saved.swatch2 ) {	
+		if ( saved.hasOwnProperty('swatch2' ) ) {	
 			game.fillSwatch( 2, saved.swatch2 ) 
 		} else {
 			game.swatches[2] = null
