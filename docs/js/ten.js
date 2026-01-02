@@ -218,14 +218,17 @@ const ten = {
 
 	interactOff: ( interact ) => {
 		// Undo the drag so the original item appears again.
+		let snapTo = null
 		if ( ten.drag.sourceElement ) {
 			ten.drag.sourceElement.classList.toggle( 'removed' )
+			snapTo = ten.drag.sourceElement.getBoundingClientRect()
 			ten.drag.sourceElement = null
 		}
-		
+
 		// Did the drop take place over the board?
 		let drag = document.getElementById( 'dragShape'  )
 		let cellGap = 3
+		let placed = false
 
 		try {
 			for ( let elem of document.elementsFromPoint( interact.x, interact.y ) ) {
@@ -241,19 +244,31 @@ const ten = {
 					let x = Math.round( ( dropOrigin.left - boardOrigin.left ) / (cellGap+dropOrigin.width) )
 					let y = Math.round( ( dropOrigin.top - boardOrigin.top ) / (cellGap+dropOrigin.width) )
 
-					if ( board.placeShapeAt( game.swatches[ten.drag.sourceSwatch], x, y ) ) {
+					placed = placed || board.placeShapeAt( game.swatches[ten.drag.sourceSwatch], x, y )
+					if ( placed ) {
 						 game.emptySwatch( ten.drag.sourceSwatch )
-					} else {
-						// animate snapback
+						 drag.remove()
 					}
 				}
 			}
 		} finally {
-			// Remove the copy from glass
-			if ( drag ) {
-				drag.remove()
-			}
 			ten.save()
+
+			if ( !placed ) {
+				let x = drag.getBoundingClientRect().left - snapTo.left
+				let y = drag.getBoundingClientRect().top - snapTo.top
+				drag.style.top = snapTo.top + 'px'
+				drag.style.left = snapTo.left + 'px'
+				drag.style.transform = `translate(${x}px,${y}px)`
+				
+				// Now apply an animation to remove the translation again.
+				let anim = drag.animate([{opacity: 0.5, transform: 'translate(0px,0px)'}],{duration:150, easing: 'ease-in-out'});
+				anim.pause()
+				anim.onfinish = () => {
+					drag.remove()
+				}
+				anim.play()
+			}
 		}
 	},
 
