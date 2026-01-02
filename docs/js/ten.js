@@ -4,7 +4,7 @@ const ten = {
 	hiscore: localStorage['ten.hiscore'] | 0,
 
 	go: () => {
-		// Build the board and the three palettes as matrices.
+		// Build the board and the three swatches as matrices.
 		ten.matrix( 'board', 10, 10 )
 
 		// Have the glass listen to mouse events
@@ -62,19 +62,19 @@ const ten = {
 
 		// Forget everything. The code following it will reinstate the state.
 		glass.setAttribute( 'class', '' )
-		if ( ten.drag.paletteId ) {
-			let elem = document.getElementById( ten.drag.paletteId )
+		if ( ten.drag.swatchId ) {
+			let elem = document.getElementById( ten.drag.swatchId )
 			elem.classList.remove( 'hover' )
-			ten.drag.paletteId = null
+			ten.drag.swatchId = null
 		}
 
-		// Is there a palette under the mouse.
+		// Is there a swatch under the mouse.
 		for ( let elem of document.elementsFromPoint( event.x, event.y ) ) {
 			let drag = elem.getAttribute( 'data-drag' )
 			if ( drag ) {
 				let glass = document.getElementById( 'glass' )
 				glass.setAttribute( 'class', 'hover' )
-				ten.drag.paletteId = elem.getAttribute( 'id' )
+				ten.drag.swatchId = elem.getAttribute( 'id' )
 				elem.classList.add( 'hover' )
 			}
 		}
@@ -115,12 +115,12 @@ const ten = {
 			y: event.changedTouches[0].pageY
 		}
 
-		// Is there a palette under the mouse. Touch has no prior knowledge of the palette ID
+		// Is there a swatch under the mouse. Touch has no prior knowledge of the swatch ID
 		// from :hover interactions, and so we must work it out here.
 		for ( let elem of document.elementsFromPoint( interact.x, interact.y ) ) {
 			let drag = elem.getAttribute( 'data-drag' )
 			if ( drag ) {
-				ten.drag.paletteId = elem.getAttribute( 'id' )
+				ten.drag.swatchId = elem.getAttribute( 'id' )
 				interact.offsetX = interact.x - elem.getBoundingClientRect().x
 				interact.offsetY = interact.y - elem.getBoundingClientRect().y + 64
 				ten.interactOn( interact )
@@ -133,12 +133,12 @@ const ten = {
 	 * Handle a mouse press on the glass. This is used to start drags from the palette ...
 	 */
 	mousePressed: ( event ) => {
-		// Don't do anything if the drag wasn't actioned by a palette.
-		if ( ten.drag.paletteId === null ) {
+		// Don't do anything if the drag wasn't actioned by a swatch.
+		if ( ten.drag.swatchId === null ) {
 			return
 		}
 		
-		// Calculate the offset based on the palette position and the mouse position.
+		// Calculate the offset based on the swatch position and the mouse position.
 		let interact = {
 			x: event.x,
 			y: event.y
@@ -146,11 +146,11 @@ const ten = {
 		let xdiff = interact.x - event.offsetX
 		let ydiff = interact.y - event.offsetY
 
-		// Calculate the pointer/palette offset. Mouse interactivity already knows the
-		// palette from the trackMouse() method
-		let palette = document.getElementById( ten.drag.paletteId )
-		interact.offsetX = interact.x - palette.getBoundingClientRect().x + xdiff
-		interact.offsetY = interact.y - palette.getBoundingClientRect().y + ydiff
+		// Calculate the pointer/swatch offset. Mouse interactivity already knows the
+		// swatch from the trackMouse() method
+		let swatch = document.getElementById( ten.drag.swatchId )
+		interact.offsetX = interact.x - swatch.getBoundingClientRect().x + xdiff
+		interact.offsetY = interact.y - swatch.getBoundingClientRect().y + ydiff
 		
 		ten.interactOn( interact )
 	},
@@ -160,18 +160,18 @@ const ten = {
 	 * does common DOM and data model stuff.
 	 */
 	interactOn: ( interact ) => {		
-		// Grab a copy of the palette first. Then mark the palette as being dragged.
-		let palette = document.getElementById( ten.drag.paletteId )
-		let copy = palette.cloneNode(true)
-		palette.classList.toggle( 'removed' )
+		// Grab a copy of the swatch first. Then mark the swatch as being dragged.
+		let swatch = document.getElementById( ten.drag.swatchId )
+		let copy = swatch.cloneNode(true)
+		swatch.classList.toggle( 'removed' )
 		
 		// Tidy up the drag data model
 		ten.drag.offsetX = interact.offsetX
 		ten.drag.offsetY = interact.offsetY
-		ten.drag.sourceElement = palette
-		ten.drag.sourcePalette = ten.drag.paletteId.slice(-1)
+		ten.drag.sourceElement = swatch
+		ten.drag.sourceSwatch = ten.drag.swatchId.slice(-1)
 		
-		// Put that copy of the palette on the glass.
+		// Put that copy of the palswatchette on the glass.
 		copy.classList.add( 'hover' )
 		copy.setAttribute( 'id', 'dragShape' )
 		copy.style.left = (interact.x - interact.offsetX) + 'px'
@@ -182,8 +182,8 @@ const ten = {
 	},
 
 	touchEnded: ( event ) => {
-		// Don't do anything if the drag wasn't actioned by a palette.
-		if ( !ten.drag.paletteId ) {
+		// Don't do anything if the drag wasn't actioned by a swatch.
+		if ( !ten.drag.swatchId ) {
 			return
 		}
 
@@ -191,8 +191,8 @@ const ten = {
 		// use the most recent one.
 		let index = event.changedTouches.length-1
 		let interact = {
-			x: event.changedTouches[index].pageX - ten.drag.offsetX,
-			y: event.changedTouches[index].pageY - ten.drag.offsetY
+			x: event.changedTouches[index].pageX - ten.drag.offsetX + 12,
+			y: event.changedTouches[index].pageY - ten.drag.offsetY + 12
 		}
 		ten.interactOff( interact )
 	},
@@ -201,8 +201,8 @@ const ten = {
 	 * Handle a mouse release event. Used to drop shapes either onto the board or back into the palette
 	 */
 	mouseReleased: ( event ) => {
-		// Don't do anything if the drag wasn't actioned by a palette.
-		if ( !ten.drag.paletteId ) {
+		// Don't do anything if the drag wasn't actioned by a swatch.
+		if ( !ten.drag.swatchId ) {
 			return
 		}
 
@@ -222,17 +222,24 @@ const ten = {
 		
 		// Did the drop take place over the board?
 		let drag = document.getElementById( 'dragShape'  )
+		let cellGap = 3
+
 		try {
 			for ( let elem of document.elementsFromPoint( interact.x, interact.y ) ) {
 				let id = elem.getAttribute( 'id' )
 				if ( id && id === 'board' ) {
+					// Get the first cell in the dragged shape's mini-DOM and use its rect as the 
+					// 'origin' of the drop, relative to the board's rect.
 					let dropOrigin = drag.querySelector( ".cell" ).getBoundingClientRect()
 					let boardOrigin = elem.getBoundingClientRect()
-					let x = Math.round( ( dropOrigin.left - boardOrigin.left ) / (3+dropOrigin.width) )
-					let y = Math.round( ( dropOrigin.top - boardOrigin.top ) / (3+dropOrigin.width) )
-					
-					if ( board.placeShapeAt( game.palette[ten.drag.sourcePalette], x, y ) ) {
-						 game.emptyPalette( ten.drag.sourcePalette )
+
+					// x & y should therefore be the rect's left and top, divided by the cell width.
+					// 3 represents the gap between cells.
+					let x = Math.round( ( dropOrigin.left - boardOrigin.left ) / (cellGap+dropOrigin.width) )
+					let y = Math.round( ( dropOrigin.top - boardOrigin.top ) / (cellGap+dropOrigin.width) )
+
+					if ( board.placeShapeAt( game.swatches[ten.drag.sourceSwatch], x, y ) ) {
+						 game.emptySwatch( ten.drag.sourceSwatch )
 					} else {
 						// animate snapback
 					}
@@ -299,9 +306,9 @@ const ten = {
 		}
 
 		// Remember the palettes
-		state.palette0 = game.palette[0] ? game.palette[0].shape : null
-		state.palette1 = game.palette[1] ? game.palette[1].shape : null
-		state.palette2 = game.palette[2] ? game.palette[2].shape : null
+		state.swatch0 = game.swatches[0] ? game.swatches[0].shape : null
+		state.swatch1 = game.swatches[1] ? game.swatches[1].shape : null
+		state.swatch2 = game.swatches[2] ? game.swatches[2].shape : null
 
 		// Stick it all in storage ...
 		localStorage['ten.state'] = JSON.stringify( state )
@@ -321,21 +328,21 @@ const ten = {
 		// Restore the score
 		ten.setScore( saved.score )
 
-		// Restore the palettes
-		if ( saved.palette0 ) {	
-			game.fillPalette( 0, saved.palette0 ) 
+		// Restore the swatches
+		if ( saved.swatch0 ) {	
+			game.fillSwatch( 0, saved.swatch0 ) 
 		} else {
-			game.palette[0] = null
+			game.swatches[0] = null
 		}
-		if ( saved.palette1 ) {	
-			game.fillPalette( 1, saved.palette1 ) 
+		if ( saved.swatch1 ) {	
+			game.fillSwatch( 1, saved.swatch1 ) 
 		} else {
-			game.palette[1] = null
+			game.swatches[1] = null
 		}
-		if ( saved.palette2 ) {	
-			game.fillPalette( 2, saved.palette2 ) 
+		if ( saved.swatch2 ) {	
+			game.fillSwatch( 2, saved.swatch2 ) 
 		} else {
-			game.palette[2] = null
+			game.swatches[2] = null
 		}
 
 		// Restore the board

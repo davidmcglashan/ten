@@ -1,153 +1,196 @@
+/* Globally disable text selection. This is a game with lots of long presses and
+   drags and we don't want this in the way. */
+* {
+	user-select: none;
+}
+
+/* Nice font, centre-align the UI in a single column, hide overflows so scrollbars
+   don't appear. */
 body {
-    overflow: hidden;
 	font-family: "Momo Trust Display", sans-serif;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
 	text-transform: lowercase;
+    overflow: hidden;
 }
 
+/* Centre-align the main game container. This ensures a uniform width to the UI. */
 main {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
 }
 
+/* Header contains the restart button and the score at either side of the UI. z-index
+   to keep interactive elements above the #glass pane. */
 header { 
-	z-index: 10;
+	width: 100%;
 	display: flex;
 	justify-content: space-between;
 	align-items: end;
-	width: 100%;
 	border-bottom: 1px solid #ccc;
 	padding-bottom: 0.2rem;
+	z-index: 10;
 }
+	/* Styled to resemble a button */
 	header a {
-		border: 2px solid #a33;
-	    color: #a33;
-    	padding: 0.5rem 1rem;
-    	border-radius: 0.5rem;
-    	text-decoration: none;
 		display: inline-block;
+		border: 2px solid #a33;
+    	border-radius: 0.5rem;
+    	padding: 0.5rem 1rem;
+	    color: #a33;
+    	text-decoration: none;
 		margin-bottom: 0.4rem;
 	}
 
+/* Nice and big, aligned to the right. */
 #score {
-	font-size: 48pt;
 	width: 100%;
+	font-size: 48pt;
 	text-align: right;
 }
 
+/* The main game element: quiet border, rows nicely spaced */
 #board {
+	border: 2px solid #ccc;
+    border-radius: 0.6rem;
+    padding: 0.4rem;
 	display: flex;
 	flex-direction: column;
 	gap: 3px;
-	border: 2px solid #ccc;
-    padding: 0.4rem;
-    border-radius: 0.6rem;
 }
 
+/* Cells evenly spaced in each row. */
 .row {
 	display: flex;
 	gap: 3px;
 }
 
+/* Cells are grey boxes when they're empty. */
 .cell {
-    box-sizing: border-box; 
+	box-sizing: border-box; 
 	background-color: #f8f8f8;
 	border: 1px solid #e0e0e0;
 	border-radius: 3px;
 	width: clamp( 1rem, 8cqw, 2rem );
 	aspect-ratio: 1;
 }
+	/* Cells get a colour class when they're filled which changes their colour ... */
+	.cell.red {
+		background-color: #a34;
+		border: 1px solid #800;
+	}
+	.cell.orange {
+		background-color: #f84;
+		border: 1px solid #e73;
+	}
+	.cell.yellow {
+		background-color: #ed0;
+		border: 1px solid #dc0;
+	}
+	.cell.green {
+		background-color: #283;
+		border: 1px solid #172;
+	}
+	.cell.blue {
+		background-color: #36c;
+		border: 1px solid #25b;
+	}
+	.cell.purple {
+		background-color: #c6c;
+		border: 1px solid #b5b;
+	}
+	.cell.black {
+		background-color: #343;
+		border: 1px solid #232;
+	}
+	.cell.grey {
+		background-color: #789;
+		border: 1px solid #678;
+	}
+	.cell.pink {
+		background-color: #faa;
+		border: 1px solid #e99;
+	}
 
-.cell.red {
-	background-color: #a34;
-	border: 1px solid #800;
-}
-.cell.orange {
-	background-color: #f84;
-	border: 1px solid #e73;
-}
-.cell.yellow {
-	background-color: #ed0;
-	border: 1px solid #dc0;
-}
-.cell.green {
-	background-color: #283;
-	border: 1px solid #172;
-}
-.cell.blue {
-	background-color: #36c;
-	border: 1px solid #25b;
-}
-.cell.purple {
-	background-color: #c6c;
-	border: 1px solid #b5b;
-}
-.cell.black {
-	background-color: #343;
-	border: 1px solid #232;
-}
-.cell.grey {
-	background-color: #789;
-	border: 1px solid #678;
-}
-.cell.pink {
-	background-color: #faa;
-	border: 1px solid #e99;
-}
-
-.palette-container {
-	padding: 2rem 0;
+/* Centre-align the shape palette below the board. */
+#palette-container {
+	margin-top: 1rem;
 	width: 100%;
 	display: flex;
 	justify-content: center;
 }
 
+/* The palette itself contains three evenly-spaced swatches. */
 #palette {
 	display: flex;
 	flex-direction: row;
 	align-items: flex-start;
-	justify-content: space-between;
-	width: 120%;
-	scale: 0.66;
+	justify-content: space-evenly;
+	width: 100%;
 }	
 
-.palette {
+/* Each swatch is a container for its evenly-spaced rows. */
+.swatch {
 	display: flex;
 	flex-direction: column;
+	gap: 2px;
+	padding: 12px;
+}
+
+	/* Swatch rows are the same as board rows but with the gaps reduced. */
+	.swatch .row {
+		gap: 2px;
+	}
+
+	/* Swatch cells are the same as board cells but with the size reduced. */
+	.swatch .cell {
+		width: clamp( 0.1rem, 4cqw, 2rem );
+	}
+
+	/* Unfilled swatch cells aren't drawn as faint boxes: they aren't drawn at all. */
+	.swatch .cell:not(.filled) {
+		background-color: transparent;
+		border-color: transparent;
+	}
+
+	/* A swatch being hovered or dragged gets a shadow. */
+	.swatch.hover .cell.filled {
+		box-shadow: 0px 8px 16px rgba(0,0,0,0.25);
+	}
+
+	/* A shape removed from a swatch has its filling removed. */
+	.swatch.removed .cell.filled {
+		background-color: transparent;
+	}
+
+/* When a swatch is on the glass it is being dragged and should appear the same size
+   as the board does so you can see where the shapes will fit. */
+#glass .swatch.hover {
 	gap: 3px;
-}	
-
-.palette .cell:not(.filled) {
-	background-color: transparent;
-	border-color: transparent;
 }
+	#glass .swatch.hover .row {
+		gap: 3px;
+	}
+	#glass .swatch.hover .cell {
+		width: clamp( 1rem, 8cqw, 2rem );
+	}
 
-.palette.hover .cell.filled {
-	box-shadow: 0px 8px 16px rgba(0,0,0,0.25);
-}
-
-.palette.removed .cell.filled {
-	background-color: transparent;
-}
-
+/* The #glass is a <div> which sits on top of the UI and is used to track pointer
+   and touch gestures and be drawn during drags. */
 #glass {
 	position: absolute;
 	inset: 0;
-	/*
-	border: 2px solid #00c;
-	background-color: #46f;
-	border-radius: 4px;
-	opacity: 0.25;
-	*/
+    overflow: hidden;
 }
+	/* When the pointer is over a palette we add this class to #glass so the pointer
+	   can show an affordance. */
+	#glass.hover {
+		cursor: pointer;
+	}
 
-#glass.hover {
-	cursor: pointer;
-}
-
+/* This element is moved on the #glass during drag events so needs absolute positioning. */
 #dragShape {
 	position: absolute;
 }

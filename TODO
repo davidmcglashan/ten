@@ -1,13 +1,11 @@
 bugs & glitches
 - 1x1s disappear from palette when the page is refreshed
-- it's still a bit tricky to grab the narrow and small pieces
-- three wide pieces really shrinks the palette container
+- Text selection still a problem
+- Shapes need to drag a little higher - function of shape height
 
-- version number and usual copy bumphf
 - drop affordances - outline the cells 
 - dragging
   - JS robustness
-  - edges
   - right-clicks
 - refactor the javascript into a decent shape
 - Animations

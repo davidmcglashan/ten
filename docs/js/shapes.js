@@ -103,7 +103,7 @@ const shapes = {
 			cells: [[0,0],[0,1],[0,2],[0,3]],
 			class: 'black'
 		},
-		{ // Horizontal thin 5x1
+		{ // Horizontal thin 4x1
 			width: 4,
 			height: 1,
 			cells: [[0,0],[1,0],[2,0],[3,0]],

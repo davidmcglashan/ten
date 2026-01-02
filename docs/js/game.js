@@ -1,5 +1,5 @@
 const game = {
-	palette: [],
+	swatches: [],
 
 	/**
 	 * Starts a new game.
@@ -14,45 +14,44 @@ const game = {
 	 * Fills the palette with three new random shapes
 	 */
 	nextPalette: () => {
-		game.fillPalette( 0, Math.floor( Math.random() * shapes.all.length ) )
-		game.fillPalette( 1, Math.floor( Math.random() * shapes.all.length ) )
-		game.fillPalette( 2, Math.floor( Math.random() * shapes.all.length ) )
+		game.fillSwatch( 0, Math.floor( Math.random() * shapes.all.length ) )
+		game.fillSwatch( 1, Math.floor( Math.random() * shapes.all.length ) )
+		game.fillSwatch( 2, Math.floor( Math.random() * shapes.all.length ) )
 	},
 
 	/**
-	 * Fill the given palette with the given shape
+	 * Fill the given swatch with the given shape
 	 */
-	fillPalette: ( palette, s ) => {
+	fillSwatch: ( swatch, s ) => {
 		let shape = shapes.all[s]
-		game.palette[palette] = shape
-		game.palette[palette].shape = s
+		game.swatches[swatch] = shape
+		game.swatches[swatch].shape = s
 
-		let elem = document.getElementById( `palette_${palette}` )
+		let elem = document.getElementById( `swatch_${swatch}` )
 		elem.setAttribute( 'data-drag', 'true' )
 		elem.classList.remove( 'removed' )
 
-
-		ten.matrix( `palette_${palette}`, shape.width, shape.height )
+		ten.matrix( `swatch_${swatch}`, shape.width, shape.height )
 		for ( let cell of shape.cells ) {
 			let x = cell[0]
 			let y = cell[1]
 
-			let elem = document.getElementById( `palette_${palette}_${x}_${y}` )
+			let elem = document.getElementById( `swatch_${swatch}_${x}_${y}` )
 			elem.setAttribute( 'class', 'cell filled ' + shape.class )
 		}
 	},
 
 	/**
-	 * Removes a palette option.
+	 * Removes a swatch option.
 	 */
-	emptyPalette: ( palette ) => {
-		game.palette[palette] = null
-		let elem = document.getElementById( `palette_${palette}` )
+	emptySwatch: ( swatch ) => {
+		game.swatches[swatch] = null
+		let elem = document.getElementById( `swatch_${swatch}` )
 		elem.removeAttribute( 'data-drag' )
 		elem.classList.add( 'removed' )
 		
-		// If all three palettes are now empty we can invoke the next palette
-		if ( game.palette[0] === null && game.palette[1] === null && game.palette[2] === null ) {
+		// If all three swatches are now empty we can invoke the next palette
+		if ( game.swatches[0] === null && game.swatches[1] === null && game.swatches[2] === null ) {
 			game.nextPalette()
 		}
 	}
