@@ -37,7 +37,7 @@ const board = {
 			
 			let elem = document.getElementById( `board_${x}_${y}` )
 			elem.setAttribute( 'class', 'cell filled ' + shape.class )
-			ten.addToScore( 1 )
+			game.addToScore( 1 )
 		}
 
 		board.checkForFills()
@@ -81,7 +81,7 @@ const board = {
 		// counting double.
 		let factor = 10
 		for ( let i=0; i<removals; i++ ) {
-			ten.addToScore( factor )
+			game.addToScore( factor )
 			factor = 2*factor
 		}
 		

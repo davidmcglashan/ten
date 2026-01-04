@@ -1,7 +1,10 @@
 bugs & glitches
+- if you drop on a swatch you get error messages
 
 - dragging
   - JS robustness
   - right-clicks
-- refactor the javascript into a decent shape
+- Touch drag seems to be too far over to the left
+- Scale the snapback animation
+- Remove the DOM stuff from board
 - web app meta and icons

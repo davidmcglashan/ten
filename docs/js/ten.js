@@ -1,21 +1,23 @@
 const ten = {
 	drag: {},
-	score: 0,
-	hiscore: localStorage['ten.hiscore'] | 0,
+	swatchScaleFactor: 1,
 
+	/**
+	 * Called from index.html. Sets up the UI and resumes/starts the game.
+	 */
 	go: () => {
 		// Build the board and the three swatches as matrices.
 		ten.matrix( 'board', 10, 10 )
 
 		// Have the glass listen to mouse events
 		let glass = document.getElementById( 'glass' )
-		glass.addEventListener( 'mouseup', ten.mouseReleased )
-		glass.addEventListener( 'mousemove', ten.trackMouse )
+		glass.addEventListener( 'mousemove', ten.mouseMoved )
 		glass.addEventListener( 'mousedown', ten.mousePressed )
-
-		glass.addEventListener( 'touchstart', ten.touchStarted, { passive: false } )
+		glass.addEventListener( 'mouseup', ten.mouseReleased )
+		
 		glass.addEventListener( 'touchmove', ten.touchMoved, { passive: false } )
-		glass.addEventListener( 'touchend', ten.touchEnded, { passive: false } )
+		glass.addEventListener( 'touchstart', ten.touchPressed, { passive: false } )
+		glass.addEventListener( 'touchend', ten.touchReleased, { passive: false } )
 
 		// Make the game a-go ... If there's one in storage, use that!
 		if ( !ten.restore() ) {
@@ -23,9 +25,14 @@ const ten = {
 		}
 	},
 
+	/**
+	 * Called from the UI. Starts a new game.
+	 */
 	restart: () => {
 		game.new()
 		ten.save()
+
+		// Returning false here stops the event propagating further.
 		return false
 	},
 
@@ -53,14 +60,14 @@ const ten = {
 	/**
 	 * Update the page element affordances as the mouse moves around.
 	 */
-	trackMouse: ( event ) => {
+	mouseMoved: ( event ) => {
 		// If we're dragging, do that instead ...
 		if ( ten.drag.sourceElement ) {
-			ten.dragMouse( event )
+			ten.mouseDragged( event )
 			return
 		}
 
-		// Forget everything. The code following it will reinstate the state.
+		// Unset the drag state. The code following it will reinstate it.
 		glass.setAttribute( 'class', '' )
 		if ( ten.drag.swatchId ) {
 			let elem = document.getElementById( ten.drag.swatchId )
@@ -80,53 +87,35 @@ const ten = {
 		}
 	},
 
-	touchMoved: ( event ) => {
-		// Just use the last change as our basis here. We can overlook multiple events and just
-		// use the most recent one.
-		let index = event.changedTouches.length-1
-		let interact = {
-			x: event.changedTouches[index].pageX - ten.drag.offsetX,
-			y: event.changedTouches[index].pageY - ten.drag.offsetY
-		}
-
-		let elem = document.getElementById( 'dragShape'  )
-		elem.style.left = (interact.x) + 'px'
-		elem.style.top = (interact.y) + 'px'
-	},
-
 	/**
-	 * Update the display during a drag operation.
+	 * A touch event has started. Work out where and handle accordingly.
 	 */
-	dragMouse: ( event ) => {
-		// If there's no drag then there's no dice.
-		if ( !ten.drag.sourceElement ) {
-			return
-		}
-
-		// Move the element being dragged to track the mouse.
-		let elem = document.getElementById( 'dragShape'  )
-		elem.style.left = (event.x - ten.drag.offsetX) + 'px'
-		elem.style.top = (event.y - ten.drag.offsetY) + 'px'
-	},
-
-	touchStarted: ( event ) => {
+	touchPressed: ( event ) => {
 		// Stop iOS displaying the zoom loupe when this becomes a long press.
 		event.preventDefault()
 
-		let interact = {
+		// Bundle the co-ords of the touch into an object for readability now
+		// and passing around later.
+		let loc = {
 			x: event.changedTouches[0].pageX,
 			y: event.changedTouches[0].pageY
 		}
 
 		// Is there a swatch under the mouse. Touch has no prior knowledge of the swatch ID
 		// from :hover interactions, and so we must work it out here.
-		for ( let elem of document.elementsFromPoint( interact.x, interact.y ) ) {
+		for ( let elem of document.elementsFromPoint( loc.x, loc.y ) ) {
 			let drag = elem.getAttribute( 'data-drag' )
 			if ( drag ) {
 				ten.drag.swatchId = elem.getAttribute( 'id' )
-				interact.offsetX = interact.x - elem.getBoundingClientRect().x
-				interact.offsetY = interact.y - elem.getBoundingClientRect().y + elem.getBoundingClientRect().height + 32
-				ten.interactOn( interact )
+				
+				// Future drag events are offset from this x/y to stop the shape being drawn under
+				// the finger. Ys get a healthy margin to push the shape away. Xs have to account for
+				// the scale factor between the scaled-down swatch and the full-size shape being drawn
+				// on the glass.
+				loc.offsetX = ten.swatchScaleFactor * ( loc.x - elem.getBoundingClientRect().x )
+				loc.offsetY = loc.y - elem.getBoundingClientRect().y + elem.getBoundingClientRect().height + 32
+				ten.startDragging( loc )
+
 				return
 			}
 		}
@@ -142,49 +131,90 @@ const ten = {
 		}
 		
 		// Calculate the offset based on the swatch position and the mouse position.
-		let interact = {
+		let loc = {
 			x: event.x,
 			y: event.y
 		}
-		let xdiff = interact.x - event.offsetX
-		let ydiff = interact.y - event.offsetY
+		let xdiff = loc.x - event.offsetX
+		let ydiff = loc.y - event.offsetY
 
 		// Calculate the pointer/swatch offset. Mouse interactivity already knows the
-		// swatch from the trackMouse() method
+		// swatch from the mouseMoved() method
 		let swatch = document.getElementById( ten.drag.swatchId )
-		interact.offsetX = interact.x - swatch.getBoundingClientRect().x + xdiff
-		interact.offsetY = interact.y - swatch.getBoundingClientRect().y + ydiff
+		loc.offsetX = loc.x - swatch.getBoundingClientRect().x + xdiff
+		loc.offsetY = loc.y - swatch.getBoundingClientRect().y + ydiff
 		
-		ten.interactOn( interact )
+		ten.startDragging( loc )
 	},
 
 	/**
 	 * Complete the setup of a drag. This code works for both touch and pointer and just
 	 * does common DOM and data model stuff.
 	 */
-	interactOn: ( interact ) => {		
+	startDragging: ( loc ) => {		
 		// Grab a copy of the swatch first. Then mark the swatch as being dragged.
 		let swatch = document.getElementById( ten.drag.swatchId )
 		let copy = swatch.cloneNode(true)
-		swatch.classList.toggle( 'removed' )
+		swatch.classList.add( 'removed' )
 		
 		// Tidy up the drag data model
-		ten.drag.offsetX = interact.offsetX
-		ten.drag.offsetY = interact.offsetY
+		ten.drag.offsetX = loc.offsetX
+		ten.drag.offsetY = loc.offsetY
 		ten.drag.sourceElement = swatch
 		ten.drag.sourceSwatch = ten.drag.swatchId.slice(-1)
 		
-		// Put that copy of the palswatchette on the glass.
+		// Put that copy of the swatch on the glass.
 		copy.classList.add( 'hover' )
 		copy.setAttribute( 'id', 'dragShape' )
-		copy.style.left = (interact.x - interact.offsetX) + 'px'
-		copy.style.top = (interact.y - interact.offsetY) + 'px'
+		copy.style.left = (loc.x - loc.offsetX) + 'px'
+		copy.style.top = (loc.y - loc.offsetY) + 'px'
 
 		let glass = document.getElementById( 'glass' )
 		glass.appendChild( copy )
 	},
 
-	touchEnded: ( event ) => {
+	/**
+	 * Handle touch events moving on the glass.
+	 */
+	touchMoved: ( event ) => {
+		// Stop quickly if there's no drag happening.
+		if ( !ten.drag.sourceElement ) {
+			return
+		}
+
+		// Just use the last change as our basis here. We can overlook multiple events and just
+		// use the most recent one.
+		let index = event.changedTouches.length-1
+		let loc = {
+			x: event.changedTouches[index].pageX - ten.drag.offsetX,
+			y: event.changedTouches[index].pageY - ten.drag.offsetY
+		}
+
+		// Move the shape.
+		let elem = document.getElementById( 'dragShape'  )
+		elem.style.left = `${loc.x}px`
+		elem.style.top = `${loc.y}px`
+	},
+
+	/**
+	 * Update the display during a drag operation.
+	 */
+	mouseDragged: ( event ) => {
+		// If there's no drag then there's no dice.
+		if ( !ten.drag.sourceElement ) {
+			return
+		}
+
+		// Move the element being dragged to track the mouse.
+		let elem = document.getElementById( 'dragShape'  )
+		elem.style.left = (event.x - ten.drag.offsetX) + 'px'
+		elem.style.top = (event.y - ten.drag.offsetY) + 'px'
+	},
+
+	/**
+	 * Handle a touch release event. The drag has stopped: it's time to drop.
+	 */
+	touchReleased: ( event ) => {
 		// Don't do anything if the drag wasn't actioned by a swatch.
 		if ( !ten.drag.swatchId ) {
 			return
@@ -193,11 +223,11 @@ const ten = {
 		// Just use the last change as our basis here. We can overlook multiple events and just
 		// use the most recent one.
 		let index = event.changedTouches.length-1
-		let interact = {
+		let loc = {
 			x: event.changedTouches[index].pageX - ten.drag.offsetX + 12,
 			y: event.changedTouches[index].pageY - ten.drag.offsetY + 12
 		}
-		ten.interactOff( interact )
+		ten.stopDragging( loc )
 	},
 
 	/**
@@ -209,33 +239,40 @@ const ten = {
 			return
 		}
 
-		let interact = {
+		let loc = {
 			x: event.x,
 			y: event.y
 		}
-		ten.interactOff( interact )
+		ten.stopDragging( loc )
 	},
 
-	interactOff: ( interact ) => {
-		// Undo the drag so the original item appears again.
+	/**
+	 * Handles the end of a drag from both touch and pointer events. The passed in object
+	 * contains the x/y of the pointer/finger.
+	 */
+	stopDragging: ( loc ) => {
+		// Undo the drag so the original item appears again. Remember the snapTo
+		// location before we remove the source palette element.
 		let snapTo = null
 		if ( ten.drag.sourceElement ) {
-			ten.drag.sourceElement.classList.toggle( 'removed' )
+			ten.drag.sourceElement.classList.remove( 'removed' )
 			snapTo = ten.drag.sourceElement.getBoundingClientRect()
 			ten.drag.sourceElement = null
 		}
 
-		// Did the drop take place over the board?
+		// Some other useful vars to track.
 		let drag = document.getElementById( 'dragShape'  )
 		let cellGap = 3
 		let placed = false
-
+		
+		// Did the drop take place over the board?
 		try {
-			for ( let elem of document.elementsFromPoint( interact.x, interact.y ) ) {
+			for ( let elem of document.elementsFromPoint( loc.x, loc.y ) ) {
 				let id = elem.getAttribute( 'id' )
 				if ( id && id === 'board' ) {
 					// Get the first cell in the dragged shape's mini-DOM and use its rect as the 
-					// 'origin' of the drop, relative to the board's rect.
+					// 'origin' of the drop, relative to the board's rect. This sidesteps doing
+					// any pointer location shenanigans.
 					let dropOrigin = drag.querySelector( ".cell" ).getBoundingClientRect()
 					let boardOrigin = elem.getBoundingClientRect()
 
@@ -244,6 +281,7 @@ const ten = {
 					let x = Math.round( ( dropOrigin.left - boardOrigin.left ) / (cellGap+dropOrigin.width) )
 					let y = Math.round( ( dropOrigin.top - boardOrigin.top ) / (cellGap+dropOrigin.width) )
 
+					// Ask the board to try and place the shape.
 					placed = placed || board.placeShapeAt( game.swatches[ten.drag.sourceSwatch], x, y )
 					if ( placed ) {
 						 game.emptySwatch( ten.drag.sourceSwatch )
@@ -252,8 +290,10 @@ const ten = {
 				}
 			}
 		} finally {
+			// Remember the updated game state.
 			ten.save()
 
+			// If we didn't place the shape play a snapback animation.
 			if ( !placed ) {
 				let x = drag.getBoundingClientRect().left - snapTo.left
 				let y = drag.getBoundingClientRect().top - snapTo.top
@@ -272,30 +312,45 @@ const ten = {
 		}
 	},
 
-	addToScore: ( inc ) => {
-		ten.score += inc
-		ten.updateScore()
-	},
+	/**
+	 * Update the DOM when a swatch is filled.
+	 */
+	fillSwatch: ( swatchIndex, shape) => {
+		let elem = document.getElementById( `swatch_${swatchIndex}` )
+		elem.setAttribute( 'data-drag', 'true' )
+		elem.classList.remove( 'removed' )
 
-	setScore: ( inc ) => {
-		ten.score = inc
-		ten.updateScore()
+		ten.matrix( `swatch_${swatchIndex}`, shape.width, shape.height )
+		for ( let cell of shape.cells ) {
+			let x = cell[0]
+			let y = cell[1]
+
+			let elem = document.getElementById( `swatch_${swatchIndex}_${x}_${y}` )
+			elem.setAttribute( 'class', 'cell filled ' + shape.class )
+		}
 	},
 
 	/**
-	 * Called when the score is changed. Tracks hi-scores. Does DOM stuff.
+	 * Update the DOM when a swatch is emptied.
 	 */
-	updateScore: () => {
+	emptySwatch: ( swatchIndex ) => {
+		let elem = document.getElementById( `swatch_${swatchIndex}` )
+		elem.removeAttribute( 'data-drag' )
+		elem.classList.add( 'removed' )
+	},
+
+	/**
+	 * Called when the score is changed. Does DOM stuff.
+	 */
+	updateScore: ( score, hiscore ) => {
 		let elem = document.getElementById( 'score'  )
-		elem.innerHTML = ten.score.toLocaleString()
+		elem.innerHTML = score.toLocaleString()
 
 		elem = document.getElementById( 'hi-score'  )
-		if ( ten.score > ten.hiscore ) {
-			ten.hiscore = ten.score
-			localStorage['ten.hiscore'] = ten.hiscore
+		if ( score === hiscore ) {
 			elem.innerHTML = 'new hi-score'
 		} else {
-			elem.innerHTML = `hi-score: ${ten.hiscore.toLocaleString()}`
+			elem.innerHTML = `hi-score: ${hiscore.toLocaleString()}`
 		}
 	},
 
@@ -305,7 +360,7 @@ const ten = {
 	save: () => {
 		// Remember the score
 		let state = {}
-		state.score = ten.score
+		state.score = game.score
 		
 		// Remember the cells
 		state.cells = []
@@ -344,7 +399,7 @@ const ten = {
 		let saved = JSON.parse( savedStr )
 
 		// Restore the score
-		ten.setScore( saved.score )
+		game.setScore( saved.score )
 
 		// Restore the swatches
 		if ( saved.hasOwnProperty('swatch0' ) && saved.swatch0 !== null ) {	

@@ -1,11 +1,13 @@
 const game = {
+	score: 0,
+	hiscore: localStorage['ten.hiscore'] | 0,
 	swatches: [],
 
 	/**
 	 * Starts a new game.
 	 */
 	new: () => {
-		ten.setScore( 0 )
+		game.setScore( 0 )
 		board.empty()
 		game.nextPalette()
 	},
@@ -22,37 +24,44 @@ const game = {
 	/**
 	 * Fill the given swatch with the given shape
 	 */
-	fillSwatch: ( swatch, s ) => {
-		let shape = shapes.all[s]
-		game.swatches[swatch] = shape
-		game.swatches[swatch].shape = s
-
-		let elem = document.getElementById( `swatch_${swatch}` )
-		elem.setAttribute( 'data-drag', 'true' )
-		elem.classList.remove( 'removed' )
-
-		ten.matrix( `swatch_${swatch}`, shape.width, shape.height )
-		for ( let cell of shape.cells ) {
-			let x = cell[0]
-			let y = cell[1]
-
-			let elem = document.getElementById( `swatch_${swatch}_${x}_${y}` )
-			elem.setAttribute( 'class', 'cell filled ' + shape.class )
-		}
+	fillSwatch: ( swatchIndex, shapeIndex ) => {
+		let shape = shapes.all[shapeIndex]
+		game.swatches[swatchIndex] = shape
+		game.swatches[swatchIndex].shape = shapeIndex
+		ten.fillSwatch( swatchIndex, shape )
 	},
 
 	/**
 	 * Removes a swatch option.
 	 */
-	emptySwatch: ( swatch ) => {
-		game.swatches[swatch] = null
-		let elem = document.getElementById( `swatch_${swatch}` )
-		elem.removeAttribute( 'data-drag' )
-		elem.classList.add( 'removed' )
+	emptySwatch: ( swatchIndex ) => {
+		game.swatches[swatchIndex] = null
+		ten.emptySwatch( swatchIndex )
 		
 		// If all three swatches are now empty we can invoke the next palette
 		if ( game.swatches[0] === null && game.swatches[1] === null && game.swatches[2] === null ) {
 			game.nextPalette()
 		}
-	}
+	},
+
+	/**
+	 * Add the passed in increment value to the game's score.
+	 */
+	addToScore: ( inc ) => {
+		game.score += inc
+		if ( game.score > game.hiscore ) {
+			game.hiscore = game.score
+			localStorage['ten.hiscore'] = game.hiscore
+		}
+		ten.updateScore( game.score, game.hiscore )
+	},
+
+	/**
+	 * Set the game's score. This is used to restore saved games and doesn't
+	 * do any highscore shenanigans.
+	 */
+	setScore: ( inc ) => {
+		game.score = inc
+		ten.updateScore( game.score, game.hiscore )
+	},
 };
