@@ -4,7 +4,6 @@ bugs & glitches
 - dragging
   - JS robustness
   - right-clicks
-- Touch drag seems to be too far over to the left
 - Scale the snapback animation
 - Remove the DOM stuff from board
 - web app meta and icons

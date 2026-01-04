@@ -1,6 +1,6 @@
 const ten = {
 	drag: {},
-	swatchScaleFactor: 1,
+	swatchScaleFactor: 0,
 
 	/**
 	 * Called from index.html. Sets up the UI and resumes/starts the game.
@@ -327,6 +327,15 @@ const ten = {
 
 			let elem = document.getElementById( `swatch_${swatchIndex}_${x}_${y}` )
 			elem.setAttribute( 'class', 'cell filled ' + shape.class )
+		}
+
+		// Update the swatch scale factor if it's set to zero.
+		if ( ten.swatchScaleFactor === 0 ) {
+			let board = document.getElementById( 'board' )
+			let boardCell = board.querySelector( ".cell" ).getBoundingClientRect()
+			let swatchCell = elem.querySelector( ".cell" ).getBoundingClientRect()
+
+			ten.swatchScaleFactor = boardCell.width / swatchCell.width
 		}
 	},
 
