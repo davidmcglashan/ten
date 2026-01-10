@@ -357,9 +357,9 @@ const ten = {
 
 		elem = document.getElementById( 'hi-score'  )
 		if ( score === hiscore ) {
-			elem.innerHTML = 'new hi-score'
+			elem.innerHTML = 'new high score'
 		} else {
-			elem.innerHTML = `hi-score: ${hiscore.toLocaleString()}`
+			elem.innerHTML = `high score: ${hiscore.toLocaleString()}`
 		}
 	},
 
